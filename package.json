@@ -1,0 +1,19 @@
+{
+  "name": "nodejscourse",
+  "version": "1.0.0",
+  "description": "a demo node.js app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "mongodb"
+  ],
+  "author": "Shivang",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
