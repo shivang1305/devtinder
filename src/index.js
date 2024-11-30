@@ -1,9 +1,12 @@
 const express = require("express");
 require("dotenv").config();
+const cors = require("cors");
 
 console.log(process.env.PORT);
 
 const app = express();
+
+app.use(cors());
 
 const port = process.env.PORT || 6001;
 
@@ -14,6 +17,14 @@ const jsonData = {
     married: true,
   },
 };
+
+// app.use("/", (req, res) => {
+//   res.send("Hello from server");
+// });
+
+// app.use("/test", (req, res) => {
+//   res.send("Hello from test");
+// });
 
 // callback function in js
 app.get("/", (req, res) => {
