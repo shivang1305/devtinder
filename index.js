@@ -1,7 +1,11 @@
 const express = require("express");
+require("dotenv").config();
+
+console.log(process.env.PORT);
+
 const app = express();
 
-const port = 5001;
+const port = process.env.PORT || 6001;
 
 const jsonData = {
   employee: {
@@ -13,7 +17,7 @@ const jsonData = {
 
 // callback function in js
 app.get("/", (req, res) => {
-  res.send("Default Route");
+  res.send("Default API");
 });
 
 app.get("/home", (req, res) => {
