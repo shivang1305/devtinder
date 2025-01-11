@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const { adminAuth, userAuth } = require("./middlewares/auth.js");
 
 console.log(process.env.PORT);
 
@@ -10,37 +11,22 @@ app.use(cors());
 
 const port = process.env.PORT || 6001;
 
-const jsonData = {
-  employee: {
-    name: "sonoo",
-    salary: 56000,
-    married: true,
-  },
-};
+app.use("/admin", adminAuth);
 
-// app.use("/", (req, res) => {
-//   res.send("Hello from server");
-// });
-
-// app.use("/test", (req, res) => {
-//   res.send("Hello from test");
-// });
-
-// callback function in js
-app.get("/", (req, res) => {
-  res.send("Default API");
+app.get("/admin/getAllData", (req, res) => {
+  res.send("All data sent");
 });
 
-app.get("/home", (req, res) => {
-  res.send("Hello World!");
+app.delete("/admin/deleteUser", (req, res) => {
+  res.send("User Deleted");
 });
 
-app.get("/login", (req, res) => {
-  res.send("<h1>Login Route</h1>");
+app.use("/user", userAuth, (req, res) => {
+  throw new Error("User Error");
 });
 
-app.get("/github", (req, res) => {
-  res.json(jsonData);
+app.use("/", (err, req, res, next) => {
+  if (err) res.status(500).send("Something went wrong");
 });
 
 app.listen(port, () => {
