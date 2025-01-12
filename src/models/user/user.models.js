@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema(
       min: [10, "Phone number must be of 10 digits"],
       max: [10, "Phone number cannot be more than 10 digits"],
     },
+    age: {
+      type: Number,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
