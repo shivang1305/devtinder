@@ -41,7 +41,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("user created successfully");
   } catch (error) {
-    res.status(400).send("Error in creating user");
+    res.status(400).send("Error in creating user: " + error.message);
   }
 });
 
@@ -57,8 +57,8 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
 
   try {
@@ -77,7 +77,7 @@ app.patch("/user", async (req, res) => {
 
     res.send("User updated successfully");
   } catch (error) {
-    res.status(400).send("Error finding the user");
+    res.status(400).send(error.message);
   }
 });
 
