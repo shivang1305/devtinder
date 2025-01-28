@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import { DEFAULT_IMAGE_URL } from "../../utils/constants.js";
+import {
+  ALLOWED_GENDER_VALUES,
+  DEFAULT_IMAGE_URL,
+} from "../../utils/constants.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,7 +13,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "email id is required"],
       unique: true,
     },
     password: {
@@ -35,9 +38,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       validate(value) {
-        if (!["male", "female", "other"].includes(value))
+        if (!ALLOWED_GENDER_VALUES.includes(value.toUpperCase()))
           throw new Error("Gender data is not valid");
       },
+    },
+    interests: {
+      type: [String],
+      required: true,
     },
   },
   { timestamps: true }
