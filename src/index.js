@@ -3,6 +3,7 @@ import "dotenv/config";
 import { connectDB } from "./db/config.js";
 import cors from "cors";
 import { User } from "./models/user/user.models.js";
+import { ALLOWED_UPATES } from "./utils/constants.js";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.get("/feed", async (req, res) => {
     if (!users.length) res.status(404).send("No user found");
     res.send(users);
   } catch (error) {
-    res.status(400).send("Error finding the user");
+    res.status(400).send("Error in feed API");
   }
 });
 
@@ -26,8 +27,8 @@ app.get("/user", async (req, res) => {
 
   try {
     const user = await User.find({ email: userEmail });
-    if (!user.length) res.send("No user found");
-    res.send(user);
+    if (!user.length) res.status(404).send("No user found");
+    else res.send(user);
   } catch (error) {
     res.status(400).send("Error finding the user");
   }
@@ -49,6 +50,7 @@ app.delete("/user", async (req, res) => {
 
   try {
     const user = await User.findByIdAndDelete(userId);
+    if (!user) res.status(404).send("No user found");
     res.send(user);
   } catch (error) {
     res.status(400).send("Error finding the user");
@@ -60,11 +62,18 @@ app.patch("/user", async (req, res) => {
   const data = req.body;
 
   try {
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPATES.includes(k)
+    );
+
+    if (!isUpdateAllowed) throw new Error("Update is not allowed");
+
     const user = await User.findByIdAndUpdate(userId, data, {
       returnDocument: "after",
       runValidators: true,
     });
-    console.log(user);
+
+    if (!user) res.status(404).send("No user found");
 
     res.send("User updated successfully");
   } catch (error) {
@@ -79,4 +88,4 @@ connectDB()
       console.log(`Example app listening on port ${port}`);
     });
   })
-  .catch(() => console.log("Error connecting to DB"));
+  .catch((err) => console.log("Error connecting to DB ", err));
