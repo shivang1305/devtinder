@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { DEFAULT_IMAGE_URL } from "../../utils/constants.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,6 +22,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       min: [10, "Phone number must be of 10 digits"],
       max: [10, "Phone number cannot be more than 10 digits"],
+    },
+    photoUrl: {
+      type: String,
+      deafult: DEFAULT_IMAGE_URL,
     },
     age: {
       type: Number,
