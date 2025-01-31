@@ -4,6 +4,7 @@ import { connectDB } from "./db/config.js";
 import cors from "cors";
 import { User } from "./models/user/user.models.js";
 import { ALLOWED_UPATES } from "./utils/constants.js";
+import { userSignupValidator } from "./validators/user.validators.js";
 
 const app = express();
 
@@ -34,7 +35,7 @@ app.get("/user", async (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", userSignupValidator, async (req, res) => {
   const user = new User(req.body);
 
   try {
