@@ -73,7 +73,7 @@ app.post("/login", userLoginValidator, async (req, res) => {
     const isCorrectPassword = await bcrypt.compare(password, passwordHash);
 
     if (isCorrectPassword) res.status(200).send("User logged in successfully");
-    else res.status(401).send("Incorrect password");
+    else res.status(401).send("Invalid user credentials");
   } catch (error) {
     res.status(400).send("Something went wrong");
   }
