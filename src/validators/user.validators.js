@@ -78,3 +78,31 @@ export const userSignupValidator = [
     next(); // in case of no error, proceed to the controller func
   },
 ];
+
+export const userLoginValidator = [
+  check("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address")
+    .normalizeEmail(),
+
+  check("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 3, max: 30 })
+    .withMessage("Password must be between 3 and 30 characters")
+    .isStrongPassword()
+    .withMessage("Password is weak, enter a strong password"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    next();
+  },
+];
