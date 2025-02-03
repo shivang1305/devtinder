@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import { connectDB } from "./db/config.js";
 import cors from "cors";
+import bcrypt from "bcrypt";
 import { User } from "./models/user/user.models.js";
 import { ALLOWED_UPATES } from "./utils/constants.js";
 import { userSignupValidator } from "./validators/user.validators.js";
@@ -36,7 +37,19 @@ app.get("/user", async (req, res) => {
 });
 
 app.post("/signup", userSignupValidator, async (req, res) => {
-  const user = new User(req.body);
+  const { firstName, lastName, email, password, phoneNumber, age, gender } =
+    req.body;
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = new User({
+    firstName,
+    lastName,
+    email,
+    password: passwordHash,
+    phoneNumber,
+    age,
+    gender,
+  });
 
   try {
     await user.save();
