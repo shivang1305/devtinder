@@ -1,20 +1,20 @@
-import { body } from "express-validator";
+import { check, validationResult } from "express-validator";
 
 export const userSignupValidator = [
-  body("firstName")
+  check("firstName")
     .trim()
     .notEmpty()
     .withMessage("First name is required")
     .isLength({ min: 3, max: 40 })
     .withMessage("First name must be between 3 and 40 characters"),
 
-  body("lastName")
+  check("lastName")
     .optional()
     .trim()
     .isLength({ min: 3, max: 40 })
     .withMessage("Last name must be between 3 and 40 characters"),
 
-  body("email")
+  check("email")
     .trim()
     .notEmpty()
     .withMessage("Email is required")
@@ -22,7 +22,7 @@ export const userSignupValidator = [
     .withMessage("Invalid email address")
     .normalizeEmail(),
 
-  body("password")
+  check("password")
     .trim()
     .notEmpty()
     .withMessage("Password is required")
@@ -31,7 +31,7 @@ export const userSignupValidator = [
     .isStrongPassword()
     .withMessage("Password is weak, enter a strong password"),
 
-  body("phoneNumber")
+  check("phoneNumber")
     .optional()
     .trim()
     .isLength({ min: 10, max: 10 })
@@ -39,15 +39,15 @@ export const userSignupValidator = [
     .isMobilePhone()
     .withMessage("Invalid phone number"),
 
-  body("photoUrl").optional().trim().isURL().withMessage("Invalid photo URL"),
+  check("photoUrl").optional().trim().isURL().withMessage("Invalid photo URL"),
 
-  body("age")
+  check("age")
     .notEmpty()
     .withMessage("Age is required")
     .isInt({ min: 16, max: 99 })
     .withMessage("Age must be between 16 and 99"),
 
-  body("gender")
+  check("gender")
     .notEmpty()
     .withMessage("Gender is required")
     .custom((value) => {
@@ -58,7 +58,7 @@ export const userSignupValidator = [
       return true;
     }),
 
-  body("interests")
+  check("interests")
     .optional()
     .isArray()
     .withMessage("Interests must be an array")
@@ -68,4 +68,13 @@ export const userSignupValidator = [
       }
       return true;
     }),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    next(); // in case of no error, proceed to the controller func
+  },
 ];
