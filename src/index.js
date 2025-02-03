@@ -5,7 +5,10 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import { User } from "./models/user/user.models.js";
 import { ALLOWED_UPATES } from "./utils/constants.js";
-import { userSignupValidator } from "./validators/user.validators.js";
+import {
+  userLoginValidator,
+  userSignupValidator,
+} from "./validators/user.validators.js";
 
 const app = express();
 
@@ -56,6 +59,23 @@ app.post("/signup", userSignupValidator, async (req, res) => {
     res.send("user created successfully");
   } catch (error) {
     res.status(400).send("Error in creating user: " + error.message);
+  }
+});
+
+app.post("/login", userLoginValidator, async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) res.status(404).send("Invalid user credentials");
+    const passwordHash = user.password;
+
+    const isCorrectPassword = await bcrypt.compare(password, passwordHash);
+
+    if (isCorrectPassword) res.status(200).send("User logged in successfully");
+    else res.status(401).send("Incorrect password");
+  } catch (error) {
+    res.status(400).send("Something went wrong");
   }
 });
 
