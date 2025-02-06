@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/user/user.models.js";
+import jwt from "jsonwebtoken";
 
 const userSignup = async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber, age, gender } =
@@ -34,8 +35,18 @@ const userLogin = async (req, res) => {
 
     const isCorrectPassword = await bcrypt.compare(password, passwordHash);
 
-    if (isCorrectPassword) res.status(200).send("User logged in successfully");
-    else res.status(401).send("Invalid user credentials");
+    if (isCorrectPassword) {
+      // create a jwt token
+      const token = await jwt.sign(
+        { id: user._id },
+        process.env.TOKEN_SECRET_KEY
+      );
+      if (!token) throw new Error("token is not generated");
+
+      // store the token in the cookie
+      res.cookie("token", token);
+      res.status(200).send("User logged in successfully");
+    } else res.status(401).send("Invalid user credentials");
   } catch (error) {
     res.status(400).send("Something went wrong");
   }
