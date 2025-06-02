@@ -39,7 +39,8 @@ const userLogin = async (req, res) => {
       // create a jwt token
       const token = await jwt.sign(
         { id: user._id },
-        process.env.TOKEN_SECRET_KEY
+        process.env.TOKEN_SECRET_KEY,
+        { expiresIn: "1d" }
       );
       if (!token) throw new Error("token is not generated");
 

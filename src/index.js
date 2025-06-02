@@ -23,7 +23,7 @@ connectDB()
   .then(() => {
     console.log("DB is connected successfully");
     app.listen(port, () => {
-      console.log(`Example app listening on port ${port}`);
+      console.log(`DevTinder app listening on port ${port}`);
     });
   })
   .catch((err) => console.log("Error connecting to DB ", err));
