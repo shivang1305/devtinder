@@ -37,11 +37,7 @@ const userLogin = async (req, res) => {
 
     if (isCorrectPassword) {
       // create a jwt token
-      const token = await jwt.sign(
-        { id: user._id },
-        process.env.TOKEN_SECRET_KEY,
-        { expiresIn: "1d" }
-      );
+      const token = await user.getJWTToken();
       if (!token) throw new Error("token is not generated");
 
       // store the token in the cookie

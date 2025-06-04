@@ -80,6 +80,19 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWTToken = async function () {
+  const token = await jwt.sign(
+    { _id: this._id },
+    process.env.TOKEN_SECRET_KEY,
+    {
+      expiresIn: "1d",
+    }
+  );
+
+  return token;
+};
+
 // name of the collection in db
 // local variable name of the schema
 export const User = mongoose.model("User", userSchema);
