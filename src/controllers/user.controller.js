@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/user/user.models.js";
-import jwt from "jsonwebtoken";
 
 const userSignup = async (req, res) => {
   const { firstName, lastName, email, password, phoneNumber, age, gender } =
@@ -33,7 +32,7 @@ const userLogin = async (req, res) => {
     if (!user) res.status(404).send("Invalid user credentials");
     const passwordHash = user.password;
 
-    const isCorrectPassword = await bcrypt.compare(password, passwordHash);
+    const isCorrectPassword = await user.comparePassword(password);
 
     if (isCorrectPassword) {
       // create a jwt token

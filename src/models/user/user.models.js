@@ -4,6 +4,8 @@ import {
   DEFAULT_IMAGE_URL,
 } from "../../utils/constants.js";
 import validator from "validator";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
@@ -91,6 +93,10 @@ userSchema.methods.getJWTToken = async function () {
   );
 
   return token;
+};
+
+userSchema.methods.comparePassword = async function (passwordInput) {
+  return await bcrypt.compare(passwordInput, this.password);
 };
 
 // name of the collection in db
