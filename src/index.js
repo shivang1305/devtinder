@@ -2,11 +2,6 @@ import express from "express";
 import "dotenv/config";
 import { connectDB } from "./db/config.js";
 import cors from "cors";
-import {
-  userLoginValidator,
-  userSignupValidator,
-} from "./validators/user.validators.js";
-import { userLogin, userSignup } from "./controllers/user.controller.js";
 
 const app = express();
 
@@ -15,9 +10,9 @@ app.use(express.json());
 
 const port = process.env.PORT || 6001;
 
-app.post("/signup", userSignupValidator, userSignup);
+import authRoutes from "./routes/auth.routes.js";
 
-app.post("/login", userLoginValidator, userLogin);
+app.use("/auth", authRoutes);
 
 connectDB()
   .then(() => {
