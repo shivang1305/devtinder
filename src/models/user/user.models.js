@@ -83,6 +83,10 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.comparePassword = async function (passwordInput) {
+  return await bcrypt.compare(passwordInput, this.password);
+};
+
 userSchema.methods.getJWTToken = async function () {
   const token = await jwt.sign(
     { _id: this._id },
@@ -94,11 +98,6 @@ userSchema.methods.getJWTToken = async function () {
 
   return token;
 };
-
-userSchema.methods.comparePassword = async function (passwordInput) {
-  return await bcrypt.compare(passwordInput, this.password);
-};
-
 // name of the collection in db
 // local variable name of the schema
 export const User = mongoose.model("User", userSchema);
