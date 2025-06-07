@@ -1,16 +1,16 @@
-const jwt = require("jsonwebtoken");
-const { User } = require("../models/user/user.models");
+import jwt from "jsonwebtoken";
+import { User } from "../models/user/user.models.js";
 
 const userAuth = async (req, res, next) => {
-  const { token } = req.cookies;
-
-  if (!token) return res.status(401).send("Unauthorized Request");
-
   try {
-    const decoded = await jwt.verify(token, process.env.TOKEN_SECRET_KEY);
+    const { token } = req.cookies;
+
+    if (!token) return res.status(401).send("Unauthorized Request");
+
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const { _id } = decoded;
 
-    const user = await User.findById(_id);
+    const user = await User.findById(_id).select("-password");
 
     if (!user) return res.status(404).send("User not found");
 
@@ -21,4 +21,4 @@ const userAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { userAuth };
+export { userAuth };
