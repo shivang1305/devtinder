@@ -90,9 +90,9 @@ userSchema.methods.comparePassword = async function (passwordInput) {
 userSchema.methods.getJWTToken = async function () {
   const token = await jwt.sign(
     { _id: this._id },
-    process.env.TOKEN_SECRET_KEY,
+    process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "1d",
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
   );
 
