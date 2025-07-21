@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/user/user.models.js";
+import {
+  generateVerificationCode,
+  sendVerificationEmail,
+} from "../utils/helper.js";
 
 const options = {
   httpOnly: true,
@@ -7,8 +11,9 @@ const options = {
 };
 
 const userSignup = async (req, res) => {
-  const { firstName, lastName, email, password, phoneNumber, age, gender } =
-    req.body;
+  const { firstName, lastName, email, password } = req.body;
+
+  const code = generateVerificationCode();
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = new User({
@@ -16,19 +21,49 @@ const userSignup = async (req, res) => {
     lastName,
     email,
     password: passwordHash,
-    phoneNumber,
-    age,
-    gender,
+    verificationCode: code,
+    verificationCodeExpiry: Date.now() + 15 * 60 * 1000, // 15 mins
   });
 
   try {
     await user.save();
-    res
-      .status(201)
-      .json({ status: 201, message: "User Registered successfully!!!" });
+    await sendVerificationEmail(email, code);
+    res.status(201).json({
+      status: 201,
+      message: "User registered. Check email for verification code.",
+    });
   } catch (error) {
     res.status(400).send("Error in creating user: " + error.message);
   }
+};
+
+const verifyEmail = async (req, res) => {
+  const { email, code } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user || user.isEmailVerified)
+    return res
+      .status(400)
+      .json({ status: 400, message: "User not found or already verified" });
+
+  if (user.verificationCode !== code)
+    return res
+      .status(400)
+      .json({ status: 400, message: "Invalid verification code" });
+
+  if (user.verificationCodeExpiry < Date.now())
+    return res
+      .status(400)
+      .json({ status: 400, message: "Verification code expired" });
+
+  user.isEmailVerified = true;
+  user.verificationCode = undefined;
+  user.verificationCodeExpiry = undefined;
+
+  await user.save();
+
+  res.status(200).json({ status: 200, message: "Email verified successfully" });
 };
 
 const userLogin = async (req, res) => {
@@ -64,4 +99,4 @@ const userLogout = async (req, res) => {
     .json({ status: 200, message: "User Logout successfully!!!" });
 };
 
-export { userSignup, userLogin, userLogout };
+export { userSignup, userLogin, verifyEmail, userLogout };
