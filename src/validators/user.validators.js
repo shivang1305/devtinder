@@ -1,6 +1,6 @@
 import { check, validationResult } from "express-validator";
 
-export const userSignupValidator = [
+export const emailSignupValidator = [
   check("firstName")
     .trim()
     .notEmpty()
@@ -39,43 +39,12 @@ export const userSignupValidator = [
     .isMobilePhone()
     .withMessage("Invalid phone number"),
 
-  check("photoUrl").optional().trim().isURL().withMessage("Invalid photo URL"),
-
-  check("age")
-    .notEmpty()
-    .withMessage("Age is required")
-    .isInt({ min: 16, max: 99 })
-    .withMessage("Age must be between 16 and 99"),
-
-  check("gender")
-    .notEmpty()
-    .withMessage("Gender is required")
-    .custom((value) => {
-      const ALLOWED_GENDER_VALUES = ["MALE", "FEMALE", "OTHER"];
-      if (!ALLOWED_GENDER_VALUES.includes(value.toUpperCase())) {
-        throw new Error("Gender data is not valid");
-      }
-      return true;
-    }),
-
-  check("interests")
-    .optional()
-    .isArray()
-    .withMessage("Interests must be an array")
-    .custom((values) => {
-      if (!values.every((item) => typeof item === "string")) {
-        throw new Error("Each interest must be a string");
-      }
-      return true;
-    }),
-
   (req, res, next) => {
     const errors = validationResult(req);
-
-    if (!errors.isEmpty())
+    if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-
-    next(); // in case of no error, proceed to the controller func
+    }
+    next();
   },
 ];
 
