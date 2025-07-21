@@ -15,8 +15,8 @@ const port = process.env.PORT || 6001;
 import authRoutes from "./routes/auth.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 
-app.use("/auth", authRoutes);
-app.use("/profile", profileRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/profile", profileRoutes);
 
 connectDB()
   .then(() => {
