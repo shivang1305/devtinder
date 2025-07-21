@@ -9,76 +9,95 @@ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
-      type: String,
-      required: true,
-      trim: true,
-      minLength: 3,
-      maxLength: 40,
-    },
-    lastName: {
-      type: String,
-      trim: true,
-      minLength: 3,
-      maxLength: 40,
-    },
+    // 🔑 Common Identity
+    firstName: { type: String, trim: true, minLength: 3, maxLength: 40 },
+    lastName: { type: String, trim: true, minLength: 3, maxLength: 40 },
+
+    // 📨 Email login
     email: {
       type: String,
-      required: [true, "email id is required"],
       lowercase: true,
       unique: true,
+      sparse: true, // allow multiple nulls
       trim: true,
-      validate(value) {
-        if (!validator.isEmail(value))
-          throw new Error("Email is invalid: " + value);
+      validate: {
+        validator: validator.isEmail,
+        message: "Invalid email format",
       },
     },
-    password: {
-      type: String,
-      required: [true, "password is required"],
-      trim: true,
-      minLength: [3, "Password must be 3 characters or more"],
-      validate(value) {
-        if (!validator.isStrongPassword(value))
-          throw new Error("Password is weak, enter a strong password");
-      },
-    },
+    isEmailVerified: { type: Boolean, default: false },
+
+    // 📱 Phone login
     phoneNumber: {
       type: String,
       unique: true,
+      sparse: true,
       trim: true,
       validate(value) {
-        if (value.length != 10 || !validator.isMobilePhone(value))
-          throw new Error("Not a valid phone number: " + value);
+        if (value && (value.length !== 10 || !validator.isMobilePhone(value))) {
+          throw new Error("Invalid phone number");
+        }
       },
     },
-    photoUrl: {
+    isPhoneVerified: { type: Boolean, default: false },
+
+    // 🔐 Auth credentials
+    password: {
       type: String,
-      default: DEFAULT_IMAGE_URL,
+      trim: true,
+      minLength: [3, "Password must be 3 characters or more"],
       validate(value) {
-        if (!validator.isURL(value))
-          throw new Error("Photo URL is invalid: " + value);
+        if (value && !validator.isStrongPassword(value)) {
+          throw new Error("Password is weak");
+        }
       },
     },
+
+    // 🔗 Social Logins
+    googleId: { type: String, unique: true, sparse: true },
+    githubId: { type: String, unique: true, sparse: true },
+    linkedinId: { type: String, unique: true, sparse: true },
+
+    // 👤 Profile Info
     age: {
       type: Number,
-      required: true,
-      min: [16, "age cannot be less than 16"],
-      max: [99, "age cannot be more than 99"],
+      min: [16, "Must be 16+"],
+      max: [99, "Too old for Tinder 😅"],
     },
     gender: {
       type: String,
-      required: true,
-      validate(value) {
-        if (!ALLOWED_GENDER_VALUES.includes(value.toUpperCase()))
-          throw new Error("Gender data is not valid");
+      uppercase: true,
+      enum: ALLOWED_GENDER_VALUES,
+    },
+    interests: [String],
+    photoUrl: {
+      type: String,
+      default: DEFAULT_IMAGE_URL,
+      validate: {
+        validator: validator.isURL,
+        message: "Invalid photo URL",
       },
     },
-    interests: [
+    bio: {
+      type: String,
+      maxLength: 300,
+    },
+    gallery: [
       {
         type: String,
+        validate: {
+          validator: validator.isURL,
+          message: "Invalid image URL in gallery",
+        },
       },
     ],
+
+    // 🟢 Onboarding/UX Flags
+    isProfileComplete: { type: Boolean, default: false },
+
+    // 🕒 Verification Code Handling
+    verificationCode: String,
+    verificationCodeExpiry: Date,
   },
   { timestamps: true }
 );
