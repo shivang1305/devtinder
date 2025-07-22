@@ -66,13 +66,12 @@ const verifyEmail = async (req, res) => {
   res.status(200).json({ status: 200, message: "Email verified successfully" });
 };
 
-const userLogin = async (req, res) => {
+const userEmailLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
 
     if (!user) res.status(404).send("Invalid user credentials");
-    const passwordHash = user.password;
 
     const isCorrectPassword = await user.comparePassword(password);
 
@@ -99,4 +98,4 @@ const userLogout = async (req, res) => {
     .json({ status: 200, message: "User Logout successfully!!!" });
 };
 
-export { userEmailSignup, userLogin, verifyEmail, userLogout };
+export { userEmailSignup, userEmailLogin, verifyEmail, userLogout };
