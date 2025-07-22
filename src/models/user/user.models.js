@@ -9,11 +9,9 @@ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
-    // 🔑 Common Identity
     firstName: { type: String, trim: true, minLength: 3, maxLength: 40 },
     lastName: { type: String, trim: true, minLength: 3, maxLength: 40 },
 
-    // 📨 Email login
     email: {
       type: String,
       lowercase: true,
@@ -27,7 +25,6 @@ const userSchema = new mongoose.Schema(
     },
     isEmailVerified: { type: Boolean, default: false },
 
-    // 📱 Phone login
     phoneNumber: {
       type: String,
       unique: true,
@@ -41,7 +38,6 @@ const userSchema = new mongoose.Schema(
     },
     isPhoneVerified: { type: Boolean, default: false },
 
-    // 🔐 Auth credentials
     password: {
       type: String,
       trim: true,
@@ -53,12 +49,10 @@ const userSchema = new mongoose.Schema(
       },
     },
 
-    // 🔗 Social Logins
     googleId: { type: String, unique: true, sparse: true },
     githubId: { type: String, unique: true, sparse: true },
     linkedinId: { type: String, unique: true, sparse: true },
 
-    // 👤 Profile Info
     age: {
       type: Number,
       min: [16, "Must be 16+"],
@@ -92,10 +86,8 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    // 🟢 Onboarding/UX Flags
     isProfileComplete: { type: Boolean, default: false },
 
-    // 🕒 Verification Code Handling
     verificationCode: String,
     verificationCodeExpiry: Date,
   },
