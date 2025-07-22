@@ -48,30 +48,7 @@ export const emailSignupValidator = [
   },
 ];
 
-export const phoneSignupValidator = [
-  check("phoneNumber")
-    .notEmpty()
-    .withMessage("Phone number is required")
-    .isLength({ min: 10, max: 10 })
-    .withMessage("Phone number must be 10 digits")
-    .isMobilePhone()
-    .withMessage("Invalid phone number"),
-
-  check("otp")
-    .notEmpty()
-    .withMessage("OTP is required")
-    .isLength({ min: 4, max: 6 })
-    .withMessage("Invalid OTP"),
-
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ errors: errors.array() });
-    next();
-  },
-];
-
-export const userLoginValidator = [
+export const userEmailValidator = [
   check("email")
     .trim()
     .notEmpty()
