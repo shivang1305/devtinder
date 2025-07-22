@@ -10,7 +10,7 @@ const options = {
   secure: true,
 };
 
-const userSignup = async (req, res) => {
+const userEmailSignup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
   const code = generateVerificationCode();
@@ -99,4 +99,4 @@ const userLogout = async (req, res) => {
     .json({ status: 200, message: "User Logout successfully!!!" });
 };
 
-export { userSignup, userLogin, verifyEmail, userLogout };
+export { userEmailSignup, userLogin, verifyEmail, userLogout };

@@ -2,7 +2,7 @@ import express from "express";
 import {
   userLogin,
   userLogout,
-  userSignup,
+  userEmailSignup,
   verifyEmail,
 } from "../controllers/auth.controller.js";
 import {
@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.post("/email/signup", emailSignupValidator, userSignup);
+router.post("/email/signup", emailSignupValidator, userEmailSignup);
 router.post("/verify-email", verifyEmail);
 router.post("/login", userLoginValidator, userLogin);
 router.post("/logout", userLogout);
