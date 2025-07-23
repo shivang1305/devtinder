@@ -40,30 +40,36 @@ const userEmailSignup = async (req, res) => {
 const verifyEmail = async (req, res) => {
   const { email, code } = req.body;
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-  if (!user || user.isEmailVerified)
-    return res
-      .status(400)
-      .json({ status: 400, message: "User not found or already verified" });
+    if (!user || user.isEmailVerified)
+      return res
+        .status(400)
+        .json({ status: 400, message: "User not found or already verified" });
 
-  if (user.verificationCode !== code)
-    return res
-      .status(400)
-      .json({ status: 400, message: "Invalid verification code" });
+    if (user.verificationCode !== code)
+      return res
+        .status(400)
+        .json({ status: 400, message: "Invalid verification code" });
 
-  if (user.verificationCodeExpiry < Date.now())
-    return res
-      .status(400)
-      .json({ status: 400, message: "Verification code expired" });
+    if (user.verificationCodeExpiry < Date.now())
+      return res
+        .status(400)
+        .json({ status: 400, message: "Verification code expired" });
 
-  user.isEmailVerified = true;
-  user.verificationCode = undefined;
-  user.verificationCodeExpiry = undefined;
+    user.isEmailVerified = true;
+    user.verificationCode = undefined;
+    user.verificationCodeExpiry = undefined;
 
-  await user.save();
+    await user.save();
 
-  res.status(200).json({ status: 200, message: "Email verified successfully" });
+    res
+      .status(200)
+      .json({ status: 200, message: "Email verified successfully" });
+  } catch (error) {
+    res.status(400).send("Email verification failed: ", error.message);
+  }
 };
 
 const userEmailLogin = async (req, res) => {
@@ -87,7 +93,31 @@ const userEmailLogin = async (req, res) => {
         .json({ status: 200, message: "User logged in successfully" });
     } else res.status(401).send("Invalid user credentials");
   } catch (error) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Email login failed: ", error.message);
+  }
+};
+
+const userPhoneLogin = async (req, res) => {
+  const { phoneNumber } = req.body;
+
+  try {
+    const user = await User.findOne({ phoneNumber });
+
+    if (!user)
+      res
+        .status(404)
+        .json({ status: 404, message: "No user found with this phone number" });
+
+    const token = await user.getJWTToken();
+
+    if (!token) throw new Error("token is not generated");
+
+    res.cookie("token", token);
+    res
+      .status(200)
+      .json({ status: 200, message: "User logged in successfully" });
+  } catch (error) {
+    res.status(400).send("Phone login failed: ", error.message);
   }
 };
 
@@ -98,4 +128,10 @@ const userLogout = async (req, res) => {
     .json({ status: 200, message: "User Logout successfully!!!" });
 };
 
-export { userEmailSignup, userEmailLogin, verifyEmail, userLogout };
+export {
+  userEmailSignup,
+  userEmailLogin,
+  verifyEmail,
+  userPhoneLogin,
+  userLogout,
+};
