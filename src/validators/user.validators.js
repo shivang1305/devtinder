@@ -75,3 +75,14 @@ export const userEmailValidator = [
     next();
   },
 ];
+
+export const userPhoneValidator = [
+  check("phoneNumber")
+    .trim()
+    .notEmpty()
+    .withMessage("Phone number is required")
+    .isLength({ min: 10, max: 10 })
+    .withMessage("Phone number must be 10 digits")
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
+];
