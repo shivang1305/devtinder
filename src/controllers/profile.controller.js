@@ -1,3 +1,4 @@
+import { User } from "../models/user/user.models.js";
 import { userProfileEditValidator } from "../validators/user.validators.js";
 
 const getProfile = async (req, res) => {
@@ -31,4 +32,30 @@ const editProfile = async (req, res) => {
   }
 };
 
-export { getProfile, editProfile };
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user = await User.findById(req.user?._id);
+
+    const isCorrectPassword = await user.comparePassword(oldPassword);
+    if (!isCorrectPassword) {
+      return res.status(400).json({
+        message: "Old password is incorrect",
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+      message: "Password changed successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error changing password",
+      error: err.message,
+    });
+  }
+};
+
+export { getProfile, editProfile, changePassword };
