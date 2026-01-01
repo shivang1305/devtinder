@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { User } from "../models/user/user.models.js";
 import {
   generateVerificationCode,
@@ -14,20 +13,18 @@ const userEmailSignup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
   const code = generateVerificationCode();
-
-  const passwordHash = await bcrypt.hash(password, 10);
   const user = new User({
     firstName,
     lastName,
     email,
-    password: passwordHash,
+    password: password,
     verificationCode: code,
     verificationCodeExpiry: Date.now() + 15 * 60 * 1000, // 15 mins
   });
 
   try {
     await user.save();
-    await sendVerificationEmail(email, code);
+    // await sendVerificationEmail(email, code);
     res.status(201).json({
       status: 201,
       message: "User registered. Check email for verification code.",
