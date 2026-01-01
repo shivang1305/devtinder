@@ -1,4 +1,5 @@
 import { check, validationResult } from "express-validator";
+import { ALLOWED_UPATES } from "../utils/constants.js";
 
 export const emailSignupValidator = [
   check("firstName")
@@ -86,3 +87,10 @@ export const userPhoneValidator = [
     .isMobilePhone()
     .withMessage("Invalid phone number"),
 ];
+
+export const userProfileEditValidator = (req) => {
+  const isUpdateValid = Object.keys(req.body).every((update) =>
+    ALLOWED_UPATES.includes(update)
+  );
+  return isUpdateValid;
+};

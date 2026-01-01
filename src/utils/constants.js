@@ -6,9 +6,13 @@ export const DEFAULT_IMAGE_URL =
 export const ALLOWED_GENDER_VALUES = ["M", "MALE", "F", "FEMALE", "O", "OTHER"];
 
 export const ALLOWED_UPATES = [
+  "firstName",
+  "lastName",
   "photoUrl",
   "age",
   "gender",
-  "phoneNumber",
-  "name",
+  "photoUrl",
+  "interests",
+  "bio",
+  "gallery",
 ];
