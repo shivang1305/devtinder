@@ -1,6 +1,7 @@
 import { User } from "../models/user/user.models.js";
 import {
   generateVerificationCode,
+  sendForgotPasswordOtpEmail,
   sendVerificationEmail,
 } from "../utils/helper.js";
 
@@ -34,7 +35,7 @@ const userEmailSignup = async (req, res) => {
   }
 };
 
-const verifyEmail = async (req, res) => {
+const loginAfterEmailVerify = async (req, res) => {
   const { email, code } = req.body;
 
   try {
@@ -118,6 +119,68 @@ const userPhoneLogin = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User with this email does not exist",
+      });
+    }
+
+    const otp = generateVerificationCode();
+    user.forgotPasswordOtp = otp;
+    user.forgotPasswordOtpExpiry = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    await sendForgotPasswordOtpEmail(email, otp);
+
+    res.status(200).json({
+      message: "OTP sent to your email for password reset",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error in forgot password",
+      error: err.message,
+    });
+  }
+};
+
+const loginAfterForgotPass = async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res
+        .status(400)
+        .json({ status: 400, message: "This is email id does not exist" });
+
+    if (user.forgotPasswordOtp !== code)
+      return res.status(400).json({ status: 400, message: "Invalid otp" });
+
+    if (user.forgotPasswordOtpExpiry < Date.now())
+      return res
+        .status(400)
+        .json({ status: 400, message: "Forgot password otp expired" });
+
+    user.forgotPasswordOtp = undefined;
+    user.forgotPasswordOtpExpiry = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      status: 200,
+      message: "Login successfull, please change the password now",
+    });
+  } catch (error) {
+    res.status(400).send("Forgot password login failed: ", error.message);
+  }
+};
+
 const userLogout = async (req, res) => {
   return res
     .status(200)
@@ -128,7 +191,9 @@ const userLogout = async (req, res) => {
 export {
   userEmailSignup,
   userEmailLogin,
-  verifyEmail,
+  loginAfterEmailVerify as verifyEmail,
   userPhoneLogin,
+  forgotPassword,
+  loginAfterForgotPass,
   userLogout,
 };

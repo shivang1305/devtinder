@@ -90,6 +90,8 @@ const userSchema = new mongoose.Schema(
 
     verificationCode: String,
     verificationCodeExpiry: Date,
+    forgotPasswordOtp: String,
+    forgotPasswordOtpExpiry: Date,
   },
   { timestamps: true }
 );
