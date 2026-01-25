@@ -18,6 +18,19 @@ const sendConnectionRequest = async (req, res) => {
       });
     }
 
+    const existingRequest = await ConnectionRequest.findOne({
+      $or: [
+        { fromUserId, toUserId }, // sending req to same user again
+        { fromUserId: toUserId, toUserId: fromUserId }, // reverse request exists
+      ],
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        message: "Connection request already exists between these users",
+      });
+    }
+
     const connectionRequest = new ConnectionRequest({
       fromUserId,
       toUserId,
