@@ -18,12 +18,6 @@ const sendConnectionRequest = async (req, res) => {
       return res.status(404).json({ message: "Recipient user not found" });
     }
 
-    if (fromUserId.toString() === toUserId.toString()) {
-      return res.status(400).json({
-        message: "You cannot send connection request to yourself",
-      });
-    }
-
     const existingRequest = await ConnectionRequest.findOne({
       $or: [
         { fromUserId, toUserId }, // sending req to same user again
@@ -45,7 +39,7 @@ const sendConnectionRequest = async (req, res) => {
 
     const connectionRequestData = await connectionRequest.save();
     res.status(201).json({
-      message: "Connection request sent successfully",
+      message: "Connection request sent: " + status,
       data: connectionRequestData,
     });
   } catch (error) {
