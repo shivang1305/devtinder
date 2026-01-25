@@ -1,4 +1,5 @@
 import { ConnectionRequest } from "../models/connectionRequest/connectionRequest.model.js";
+import { User } from "../models/user/user.models.js";
 import { checkValidSendConnectionStatus } from "../utils/helper.js";
 
 const sendConnectionRequest = async (req, res) => {
@@ -10,6 +11,11 @@ const sendConnectionRequest = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Invalid connection request status", status });
+    }
+
+    const toUser = await User.findById(toUserId);
+    if (!toUser) {
+      return res.status(404).json({ message: "Recipient user not found" });
     }
 
     if (fromUserId.toString() === toUserId.toString()) {
