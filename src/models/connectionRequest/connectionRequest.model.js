@@ -1,21 +1,21 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const connectionRequestSchema = new mongoose.Schema(
   {
     fromUserId: {
-      type: Mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     toUserId: {
-      type: Mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     status: {
       type: String,
       enum: {
-        values: ["INTERESTED", "IGNORED", "ACCEPTED", "REJECTED"],
+        values: ["like", "pass", "accept", "reject"],
         message: "{VALUE} is not a valid status",
       },
     },
