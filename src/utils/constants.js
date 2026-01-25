@@ -5,6 +5,8 @@ export const DEFAULT_IMAGE_URL =
 
 export const ALLOWED_GENDER_VALUES = ["M", "MALE", "F", "FEMALE", "O", "OTHER"];
 
+export const SEND_CONNECTION_REQ_STATUS_VALUES = ["like", "pass"];
+
 export const ALLOWED_UPATES = [
   "firstName",
   "lastName",
