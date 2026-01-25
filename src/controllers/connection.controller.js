@@ -1,6 +1,9 @@
 import { ConnectionRequest } from "../models/connectionRequest/connectionRequest.model.js";
 import { User } from "../models/user/user.models.js";
-import { checkValidSendConnectionStatus } from "../utils/helper.js";
+import {
+  checkValidReviewConnectionStatus,
+  checkValidSendConnectionStatus,
+} from "../utils/helper.js";
 
 const sendConnectionRequest = async (req, res) => {
   try {
@@ -49,4 +52,38 @@ const sendConnectionRequest = async (req, res) => {
   }
 };
 
-export { sendConnectionRequest };
+const reviewConnectionRequest = async (req, res) => {
+  try {
+    const { requestId, status } = req.params;
+
+    if (!checkValidReviewConnectionStatus(status)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid connection request review status", status });
+    }
+
+    const connectionRequest = await ConnectionRequest.findOne({
+      _id: requestId,
+      toUserId: req.user._id,
+      status: "like", // can only review 'like' requests
+    });
+
+    if (!connectionRequest) {
+      return res.status(404).json({ message: "Connection request not found" });
+    }
+
+    connectionRequest.status = status;
+    const updatedRequest = await connectionRequest.save();
+
+    res.status(200).json({
+      message: "Connection request " + status,
+      data: updatedRequest,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+export { sendConnectionRequest, reviewConnectionRequest };
