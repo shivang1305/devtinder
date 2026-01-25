@@ -1,9 +1,16 @@
 import { ConnectionRequest } from "../models/connectionRequest/connectionRequest.model.js";
+import { checkValidSendConnectionStatus } from "../utils/helper.js";
 
 const sendConnectionRequest = async (req, res) => {
   try {
     const { toUserId, status } = req.params;
     const fromUserId = req.user._id;
+
+    if (!checkValidSendConnectionStatus(status)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid connection request status", status });
+    }
 
     const connectionRequest = new ConnectionRequest({
       fromUserId,
