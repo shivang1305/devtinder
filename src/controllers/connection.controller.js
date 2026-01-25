@@ -12,6 +12,12 @@ const sendConnectionRequest = async (req, res) => {
         .json({ message: "Invalid connection request status", status });
     }
 
+    if (fromUserId.toString() === toUserId.toString()) {
+      return res.status(400).json({
+        message: "You cannot send connection request to yourself",
+      });
+    }
+
     const connectionRequest = new ConnectionRequest({
       fromUserId,
       toUserId,
