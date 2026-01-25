@@ -1,5 +1,8 @@
 import { transporter } from "../config/mailer.js";
-import { SEND_CONNECTION_REQ_STATUS_VALUES } from "./constants.js";
+import {
+  REVIEW_CONNECTION_REQ_STATUS_VALUES,
+  SEND_CONNECTION_REQ_STATUS_VALUES,
+} from "./constants.js";
 
 export const generateVerificationCode = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
@@ -63,4 +66,8 @@ export const sendForgotPasswordOtpEmail = async (email, otp) => {
 
 export const checkValidSendConnectionStatus = (status) => {
   return SEND_CONNECTION_REQ_STATUS_VALUES.includes(status);
+};
+
+export const checkValidReviewConnectionStatus = (status) => {
+  return REVIEW_CONNECTION_REQ_STATUS_VALUES.includes(status);
 };
