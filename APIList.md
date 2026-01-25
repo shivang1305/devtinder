@@ -3,10 +3,11 @@
 ## Auth Routes
 
 - POST /auth/signup
-- POST /auth/login
+- POST /auth/login/email
+- POST /auth/login/phone
 - POST /auth/logout
 - POST /auth/verify-email
-- PATCH /auth/forgot-password
+- POST /auth/forgot-password/login
 
 ## Profile Routes
 
@@ -16,10 +17,8 @@
 
 ## Connection Request Routes
 
-- POST /request/send/interested/:userId
-- POST /request/send/ignored/:userId
-- POST /request/review/accepted/:userId
-- POST /request/review/rejected/:userId
+- POST /request/send/:status/:userId
+- POST /request/review/:status/:userId
 
 ## User Routes
 
