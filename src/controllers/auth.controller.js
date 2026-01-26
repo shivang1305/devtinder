@@ -11,7 +11,7 @@ const options = {
 };
 
 const userEmailSignup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, phoneNumber } = req.body;
 
   const code = generateVerificationCode();
   const user = new User({
@@ -19,6 +19,7 @@ const userEmailSignup = async (req, res) => {
     lastName,
     email,
     password: password,
+    phoneNumber,
     verificationCode: code,
     verificationCodeExpiry: Date.now() + 15 * 60 * 1000, // 15 mins
   });

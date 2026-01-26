@@ -20,3 +20,14 @@ export const ALLOWED_UPATES = [
   "bio",
   "gallery",
 ];
+
+export const USER_PUBLIC_FIELDS = [
+  "firstName",
+  "lastName",
+  "age",
+  "gender",
+  "photoUrl",
+  "bio",
+  "interests",
+  "gallery",
+];
