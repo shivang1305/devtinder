@@ -1,0 +1,53 @@
+name: DevTinder Backend CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-ci:
+    name: Backend CI Checks
+    runs-on: ubuntu-latest
+
+    env:
+      PORT: 0000
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      ACCESS_TOKEN_SECRET: testsecret
+      ACCESS_TOKEN_EXPIRY: 1d
+      EMAIL_USER: test@gmail.com
+      EMAIL_PASS: testpass
+      NODE_ENV: test
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Lint check
+      - name: Run ESLint
+        run: npm run lint
+
+      # 6️⃣ Run tests
+      - name: Run tests
+        run: npm test
+
+      # 7️⃣ Basic app boot test (important)
+      - name: Start server (sanity check)
+        run: |
+          npm run start &
+          sleep 5
